@@ -211,14 +211,29 @@ function Index() {
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background text-foreground">
-      {/* Ambient background */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
+      {/* Ambient animated background */}
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="aurora" />
+        <div className="grid-drift" />
+        <div className="beam" />
+        <div className="beam" style={{ animationDelay: "-8s" }} />
         <div className="orb absolute -left-32 top-1/4 size-96 rounded-full bg-accent/10 blur-[120px]" />
         <div
           className="orb absolute -right-32 top-2/3 size-96 rounded-full bg-foreground/5 blur-[120px]"
           style={{ animationDelay: "-6s" }}
         />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(1_0_0/3%)_1px,transparent_1px),linear-gradient(to_bottom,oklch(1_0_0/3%)_1px,transparent_1px)] bg-[size:72px_72px]" />
+        {SPARKS.map((s, i) => (
+          <span
+            key={i}
+            className="spark"
+            style={{
+              left: `${s.left}%`,
+              top: `${s.top}%`,
+              animationDelay: `${s.delay}s`,
+            }}
+          />
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
       </div>
 
       {/* Header */}
@@ -460,35 +475,7 @@ function Index() {
             </p>
           </Reveal>
           <Reveal delay={200}>
-            <form
-              className="mt-12 space-y-4 rounded-2xl border border-border bg-card/50 p-8"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <div className="grid gap-4 sm:grid-cols-2">
-                {["Name...", "Email...", "Phone...", "Subject..."].map(
-                  (placeholder) => (
-                    <input
-                      key={placeholder}
-                      type="text"
-                      placeholder={placeholder}
-                      className="rounded-lg border border-border bg-transparent px-4 py-3 text-foreground placeholder:text-muted-foreground transition-all duration-300 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
-                    />
-                  ),
-                )}
-              </div>
-              <textarea
-                placeholder="Message..."
-                rows={6}
-                className="w-full resize-none rounded-lg border border-border bg-transparent px-4 py-3 text-foreground placeholder:text-muted-foreground transition-all duration-300 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
-              />
-              <button
-                type="submit"
-                className="group flex w-full items-center justify-center gap-2 rounded-lg bg-foreground py-3.5 font-semibold text-background transition-all duration-300 hover:bg-accent hover:text-accent-foreground"
-              >
-                Send Message
-                <Send className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </button>
-            </form>
+            <ContactForm />
           </Reveal>
         </div>
       </section>
