@@ -1,5 +1,5 @@
 # Roadmap
 
-- [x] Animated background transitions (aurora, drifting grid, beams, sparks)
-- [x] Contact form sends name/email/phone/subject/message to sajadnazar928@gmail.com via Gmail connector
-- [x] Verified end-to-end: test submission accepted and confirmed in mailbox
+- [ ] Refine the fixed full-page animated background for accessibility and mobile performance
+- [ ] Create and add a relevant preview image to all six project cards
+- [ ] Verify desktop/mobile layout, interactions, and preserved contact form
