@@ -24,7 +24,9 @@ import {
   Network,
   Send,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import profileImg from "../assets/profile.jpg";
+import { sendContactMessage } from "@/lib/contact.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
