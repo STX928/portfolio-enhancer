@@ -24,7 +24,9 @@ import {
   Network,
   Send,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import profileImg from "../assets/profile.jpg";
+import { sendContactMessage } from "@/lib/contact.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -54,6 +56,17 @@ const NAV_LINKS = [
   { href: "#skill", label: "Skills" },
   { href: "#project", label: "Projects" },
   { href: "#contact", label: "Contact" },
+];
+
+const SPARKS = [
+  { left: 12, top: 22, delay: 0 },
+  { left: 28, top: 68, delay: 1.4 },
+  { left: 44, top: 14, delay: 2.6 },
+  { left: 57, top: 52, delay: 0.8 },
+  { left: 71, top: 30, delay: 3.4 },
+  { left: 83, top: 74, delay: 2 },
+  { left: 92, top: 42, delay: 4.2 },
+  { left: 36, top: 88, delay: 1.1 },
 ];
 
 const SKILLS = [
@@ -189,6 +202,92 @@ function ProfilePhoto() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ContactForm() {
+  const send = useServerFn(sendContactMessage);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
+    "idle",
+  );
+  const [error, setError] = useState("");
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    setStatus("sending");
+    setError("");
+    try {
+      await send({
+        data: {
+          name: String(fd.get("name") ?? ""),
+          email: String(fd.get("email") ?? ""),
+          phone: String(fd.get("phone") ?? ""),
+          subject: String(fd.get("subject") ?? ""),
+          message: String(fd.get("message") ?? ""),
+        },
+      });
+      setStatus("sent");
+      form.reset();
+    } catch (err) {
+      setStatus("error");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
+    }
+  };
+
+  const fields = [
+    { name: "name", placeholder: "Name...", type: "text", required: true },
+    { name: "email", placeholder: "Email...", type: "email", required: true },
+    { name: "phone", placeholder: "Phone...", type: "tel", required: false },
+    { name: "subject", placeholder: "Subject...", type: "text", required: false },
+  ];
+
+  return (
+    <form
+      className="mt-12 space-y-4 rounded-2xl border border-border bg-card/50 p-8 backdrop-blur-sm"
+      onSubmit={onSubmit}
+    >
+      <div className="grid gap-4 sm:grid-cols-2">
+        {fields.map((f) => (
+          <input
+            key={f.name}
+            name={f.name}
+            type={f.type}
+            required={f.required}
+            placeholder={f.placeholder}
+            className="rounded-lg border border-border bg-transparent px-4 py-3 text-foreground placeholder:text-muted-foreground transition-all duration-300 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+          />
+        ))}
+      </div>
+      <textarea
+        name="message"
+        required
+        placeholder="Message..."
+        rows={6}
+        className="w-full resize-none rounded-lg border border-border bg-transparent px-4 py-3 text-foreground placeholder:text-muted-foreground transition-all duration-300 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+      />
+      <button
+        type="submit"
+        disabled={status === "sending"}
+        className="group flex w-full items-center justify-center gap-2 rounded-lg bg-foreground py-3.5 font-semibold text-background transition-all duration-300 hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {status === "sending" ? "Sending..." : "Send Message"}
+        <Send className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+      </button>
+      {status === "sent" && (
+        <p className="text-center text-sm text-accent">
+          Thanks! Your message was sent.
+        </p>
+      )}
+      {status === "error" && (
+        <p className="text-center text-sm text-destructive">{error}</p>
+      )}
+    </form>
   );
 }
 
