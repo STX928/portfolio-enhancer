@@ -26,6 +26,12 @@ import {
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import profileImg from "../assets/profile.jpg";
+import cryptoPreview from "../assets/project-crypto.jpg";
+import socialPreview from "../assets/project-social.jpg";
+import tasksPreview from "../assets/project-tasks.jpg";
+import weatherPreview from "../assets/project-weather.jpg";
+import portfolioPreview from "../assets/project-portfolio.jpg";
+import gamePreview from "../assets/project-game.jpg";
 import { sendContactMessage } from "@/lib/contact.functions";
 
 export const Route = createFileRoute("/")({
@@ -89,31 +95,37 @@ const PROJECTS = [
     title: "CryptoExplorer Website",
     desc: "An educational website about cryptocurrencies that introduces blockchain technology, showcases the top 10 digital currencies, and provides trusted resources for tracking prices.",
     tags: ["React", "API", "Charts"],
+    image: cryptoPreview,
   },
   {
     title: "Social Dashboard",
     desc: "A dashboard showing social media stats and analytics in real-time with clean data visualizations.",
     tags: ["Next.js", "Analytics"],
+    image: socialPreview,
   },
   {
     title: "Task Manager",
     desc: "Manage daily tasks, deadlines, and priorities with a clean, focused interface.",
     tags: ["TypeScript", "UI"],
+    image: tasksPreview,
   },
   {
     title: "Weather App",
     desc: "Check real-time weather conditions with animated icons and multi-day forecasts.",
     tags: ["API", "Animation"],
+    image: weatherPreview,
   },
   {
     title: "Portfolio",
     desc: "A personal portfolio website to showcase projects and skills elegantly.",
     tags: ["Design", "Motion"],
+    image: portfolioPreview,
   },
   {
     title: "Game Website",
     desc: "Interactive web-based games with fun animations and score tracking.",
     tags: ["JavaScript", "Canvas"],
+    image: gamePreview,
   },
 ];
 
@@ -309,18 +321,15 @@ function Index() {
   }, [menuOpen]);
 
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-background text-foreground">
+    <div className="relative isolate min-h-screen overflow-x-clip bg-background text-foreground">
       {/* Ambient animated background */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <div className="site-background pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
         <div className="aurora" />
         <div className="grid-drift" />
+        <div className="network-lines" />
+        <div className="network-lines network-lines-secondary" />
         <div className="beam" />
         <div className="beam" style={{ animationDelay: "-8s" }} />
-        <div className="orb absolute -left-32 top-1/4 size-96 rounded-full bg-accent/10 blur-[120px]" />
-        <div
-          className="orb absolute -right-32 top-2/3 size-96 rounded-full bg-foreground/5 blur-[120px]"
-          style={{ animationDelay: "-6s" }}
-        />
         {SPARKS.map((s, i) => (
           <span
             key={i}
@@ -332,7 +341,7 @@ function Index() {
             }}
           />
         ))}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/65 via-background/35 to-background/75" />
       </div>
 
       {/* Header */}
@@ -408,6 +417,7 @@ function Index() {
         ))}
       </div>
 
+      <main className="relative z-10">
       {/* Hero */}
       <section id="home" className="flex min-h-screen items-center justify-center px-6">
         <div className="flex flex-col items-center text-center">
@@ -524,8 +534,20 @@ function Index() {
           <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {PROJECTS.map((project, i) => (
               <Reveal key={project.title} delay={(i % 3) * 120}>
-                <article className="group flex h-full flex-col rounded-2xl border border-border bg-card/50 p-6 transition-all duration-500 hover:-translate-y-2 hover:border-accent/60 hover:shadow-[0_24px_60px_-16px] hover:shadow-accent/20">
-                  <div className="mb-5 flex items-center justify-between">
+                 <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/70 transition-all duration-500 hover:-translate-y-2 hover:border-accent/60 hover:shadow-[0_24px_60px_-16px] hover:shadow-accent/20">
+                   <div className="project-preview relative aspect-[3/2] overflow-hidden border-b border-border bg-secondary">
+                     <img
+                       src={project.image}
+                       alt={`${project.title} interface preview`}
+                       loading="lazy"
+                       width={1200}
+                       height={800}
+                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                     />
+                     <div className="absolute inset-0 bg-gradient-to-t from-card/70 via-transparent to-transparent" />
+                   </div>
+                   <div className="flex flex-1 flex-col p-6">
+                   <div className="mb-5 flex items-center justify-between">
                     <div className="flex size-12 items-center justify-center rounded-xl bg-secondary transition-colors duration-300 group-hover:bg-accent group-hover:text-accent-foreground">
                       <Code2 className="size-6" />
                     </div>
@@ -555,6 +577,7 @@ function Index() {
                       Demo
                     </button>
                   </div>
+                   </div>
                 </article>
               </Reveal>
             ))}
@@ -578,9 +601,10 @@ function Index() {
           </Reveal>
         </div>
       </section>
+      </main>
 
       {/* Footer */}
-      <footer className="border-t border-border px-6 py-16">
+      <footer className="relative z-10 border-t border-border px-6 py-16">
         <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-2">
           <Reveal>
             <div>

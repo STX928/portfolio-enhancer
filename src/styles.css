@@ -214,21 +214,6 @@
   opacity: 1;
 }
 
-/* ---- Floating glow orbs ---- */
-@keyframes drift {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(40px, -50px) scale(1.15);
-  }
-}
-
-.orb {
-  animation: drift 12s ease-in-out infinite;
-}
-
 /* ---- Animated aurora background ---- */
 @keyframes aurora-shift {
   0% {
@@ -271,8 +256,41 @@
       transparent 70%
     );
   background-size: 180% 180%;
-  filter: blur(40px);
+  filter: blur(54px);
+  opacity: 0.7;
   animation: aurora-shift 26s ease-in-out infinite;
+}
+
+/* ---- Slowly crossing network lines ---- */
+@keyframes network-travel {
+  0% {
+    transform: translate3d(-8%, -5%, 0) rotate(-8deg);
+  }
+  50% {
+    transform: translate3d(4%, 5%, 0) rotate(-5deg);
+  }
+  100% {
+    transform: translate3d(-8%, -5%, 0) rotate(-8deg);
+  }
+}
+
+.network-lines {
+  position: absolute;
+  inset: -30%;
+  opacity: 0.32;
+  background-image:
+    linear-gradient(112deg, transparent 0 43%, oklch(0.84 0.14 195 / 18%) 43.15%, transparent 43.35%),
+    linear-gradient(68deg, transparent 0 57%, oklch(0.84 0.14 195 / 11%) 57.15%, transparent 57.35%),
+    linear-gradient(148deg, transparent 0 66%, oklch(0.97 0.005 260 / 8%) 66.1%, transparent 66.3%);
+  will-change: transform;
+  animation: network-travel 24s ease-in-out infinite;
+}
+
+.network-lines-secondary {
+  opacity: 0.2;
+  transform: scaleX(-1);
+  animation-duration: 34s;
+  animation-delay: -13s;
 }
 
 /* ---- Drifting grid ---- */
@@ -347,7 +365,28 @@
   width: 3px;
   border-radius: 9999px;
   background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
   animation: twinkle 7s ease-in-out infinite;
+}
+
+.project-preview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid oklch(1 0 0 / 6%);
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .aurora {
+    filter: blur(36px);
+    opacity: 0.55;
+  }
+
+  .beam:nth-of-type(5),
+  .spark:nth-of-type(even) {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -355,7 +394,11 @@
   .grid-drift,
   .beam,
   .spark,
-  .orb {
+  .network-lines {
     animation: none;
+  }
+
+  .network-lines {
+    transform: none;
   }
 }
