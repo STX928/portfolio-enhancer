@@ -422,7 +422,11 @@ function Index() {
       {/* Hero */}
       <section id="home" className="flex min-h-screen items-center justify-center px-6">
         <div className="flex flex-col items-center text-center">
-          <svg viewBox="0 0 1500 320" className="w-full max-w-3xl text-foreground">
+          <svg
+            viewBox="0 0 1500 320"
+            className="w-[min(94vw,62rem)] text-foreground"
+            aria-label="Sajad"
+          >
             <text
               x="50%"
               y="60%"
@@ -438,16 +442,14 @@ function Index() {
               SAJAD
             </text>
           </svg>
-          <Reveal delay={400}>
-            <h1 className="mt-2 max-w-xl text-balance text-2xl font-medium leading-snug text-muted-foreground md:text-3xl">
+          <div className="hero-after-name">
+            <h1 className="mx-auto mt-2 max-w-xl text-balance text-xl font-medium leading-relaxed text-muted-foreground sm:text-2xl md:text-3xl">
               Someone who plays with networks
               <br />
-              <span className="rounded-lg bg-foreground px-2 py-0.5 font-bold text-background">
+              <span className="mt-1 inline-block max-w-full rounded-md border border-foreground bg-foreground px-2.5 py-0.5 font-bold leading-snug text-background sm:rounded-lg">
                 and builds things that work
               </span>
             </h1>
-          </Reveal>
-          <Reveal delay={650}>
             <a
               href="#project"
               className="group mt-10 inline-flex items-center gap-2 rounded-xl border border-border px-8 py-4 font-semibold transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:bg-accent hover:text-accent-foreground hover:shadow-[0_20px_50px_-12px] hover:shadow-accent/40"
@@ -455,7 +457,7 @@ function Index() {
               Show my Work
               <ArrowUpRight className="size-5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
             </a>
-          </Reveal>
+          </div>
         </div>
       </section>
 

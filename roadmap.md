@@ -7,3 +7,5 @@
 - [x] Replace selected web skills with CCNA networking skills and update related lists
 - [x] Remove the dash from the personal introduction
 - [x] Verify the updated portfolio on desktop and phone views
+- [x] Sequence the hero so SAJAD finishes before the remaining content appears
+- [x] Enlarge the SAJAD title and correct the highlighted phrase on phone screens

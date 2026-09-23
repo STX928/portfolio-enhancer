@@ -125,6 +125,24 @@
   animation: stroke-draw 4.5s ease forwards 0.3s;
 }
 
+@keyframes hero-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.hero-after-name {
+  opacity: 0;
+  animation: hero-content-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards 4.8s;
+}
+
 /* ---- Profile photo hover effect ---- */
 .profile-frame {
   position: relative;
@@ -390,6 +408,20 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero-name,
+  .hero-after-name {
+    animation: none;
+  }
+
+  .hero-name {
+    stroke-dashoffset: 0;
+    fill: currentColor;
+  }
+
+  .hero-after-name {
+    opacity: 1;
+  }
+
   .aurora,
   .grid-drift,
   .beam,
