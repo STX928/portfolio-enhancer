@@ -440,7 +440,8 @@ function Index() {
           </svg>
           <Reveal delay={400}>
             <h1 className="mt-2 max-w-xl text-balance text-2xl font-medium leading-snug text-muted-foreground md:text-3xl">
-              Someone who plays with networks{" "}
+              Someone who plays with networks
+              <br />
               <span className="rounded-lg bg-foreground px-2 py-0.5 font-bold text-background">
                 and builds things that work
               </span>
