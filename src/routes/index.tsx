@@ -12,20 +12,21 @@ import {
   Palette,
   Braces,
   Atom,
-  Layers,
-  Wind,
   Database,
   Server,
-  Figma,
   GitBranch,
   FileCode2,
   Globe,
   ArrowUpRight,
   Network,
+  Router,
+  Cable,
+  Wifi,
+  ShieldCheck,
   Send,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import profileImg from "../assets/profile.jpg";
+import profileAsset from "../assets/sajad-nazar-profile.jpg.asset.json";
 import cryptoPreview from "../assets/project-crypto.jpg";
 import socialPreview from "../assets/project-social.jpg";
 import tasksPreview from "../assets/project-tasks.jpg";
@@ -81,12 +82,12 @@ const SKILLS = [
   { icon: Braces, label: "JavaScript" },
   { icon: FileCode2, label: "TypeScript" },
   { icon: Atom, label: "React" },
-  { icon: Layers, label: "Next.js" },
-  { icon: Globe, label: "Alpine.js" },
-  { icon: Wind, label: "Tailwind" },
+  { icon: Router, label: "Routing" },
+  { icon: Network, label: "VLANs" },
+  { icon: Cable, label: "TCP/IP" },
   { icon: Database, label: "MySQL" },
-  { icon: Server, label: "PostgreSQL" },
-  { icon: Figma, label: "Figma" },
+  { icon: Wifi, label: "Cisco IOS" },
+  { icon: ShieldCheck, label: "Network Security" },
   { icon: GitBranch, label: "GitHub" },
 ];
 
@@ -100,7 +101,7 @@ const PROJECTS = [
   {
     title: "Social Dashboard",
     desc: "A dashboard showing social media stats and analytics in real-time with clean data visualizations.",
-    tags: ["Next.js", "Analytics"],
+    tags: ["React", "Analytics"],
     image: socialPreview,
   },
   {
@@ -193,12 +194,12 @@ function ProfilePhoto() {
     >
       <div className="relative overflow-hidden rounded-[1.25rem] bg-secondary">
         <img
-          src={profileImg}
+          src={profileAsset.url}
           alt="Portrait of Sajad Nazar"
           loading="lazy"
-          width={1024}
-          height={1280}
-          className="h-[520px] w-full object-cover"
+          width={640}
+          height={640}
+          className="h-[420px] w-full object-cover object-top sm:h-[520px]"
         />
         <div className="profile-shine" />
         <div className="profile-caption absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-background/95 via-background/60 to-transparent p-5 pt-16">
@@ -439,7 +440,7 @@ function Index() {
           </svg>
           <Reveal delay={400}>
             <h1 className="mt-2 max-w-xl text-balance text-2xl font-medium leading-snug text-muted-foreground md:text-3xl">
-              Someone who plays with networks —{" "}
+              Someone who plays with networks{" "}
               <span className="rounded-lg bg-foreground px-2 py-0.5 font-bold text-background">
                 and builds things that work
               </span>
@@ -633,7 +634,7 @@ function Index() {
               <div>
                 <h4 className="font-bold">Skills</h4>
                 <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                  {["React.js", "Next.js", "Tailwind CSS", "TypeScript"].map((s) => (
+                  {["React.js", "TypeScript", "Routing", "VLANs"].map((s) => (
                     <li key={s}>
                       <a href="#skill" className="transition-colors hover:text-accent">
                         {s}
@@ -645,7 +646,7 @@ function Index() {
               <div>
                 <h4 className="font-bold">Technology</h4>
                 <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                  {["Figma", "GitHub", "MySQL", "PostgreSQL"].map((s) => (
+                  {["Cisco IOS", "TCP/IP", "Network Security", "GitHub"].map((s) => (
                     <li key={s}>
                       <a href="#skill" className="transition-colors hover:text-accent">
                         {s}
