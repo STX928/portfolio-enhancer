@@ -27,12 +27,8 @@ import {
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import profileAsset from "../assets/sajad-nazar-profile.jpg.asset.json";
-import cryptoPreview from "../assets/project-crypto.jpg";
-import socialPreview from "../assets/project-social.jpg";
-import tasksPreview from "../assets/project-tasks.jpg";
-import weatherPreview from "../assets/project-weather.jpg";
-import portfolioPreview from "../assets/project-portfolio.jpg";
-import gamePreview from "../assets/project-game.jpg";
+import { useQuery } from "@tanstack/react-query";
+import { portfolioQuery, resolveImage, type Project } from "@/lib/portfolio";
 import { sendContactMessage } from "@/lib/contact.functions";
 
 export const Route = createFileRoute("/")({
@@ -89,45 +85,6 @@ const SKILLS = [
   { icon: Wifi, label: "Cisco IOS" },
   { icon: ShieldCheck, label: "Network Security" },
   { icon: GitBranch, label: "GitHub" },
-];
-
-const PROJECTS = [
-  {
-    title: "CryptoExplorer Website",
-    desc: "An educational website about cryptocurrencies that introduces blockchain technology, showcases the top 10 digital currencies, and provides trusted resources for tracking prices.",
-    tags: ["React", "API", "Charts"],
-    image: cryptoPreview,
-  },
-  {
-    title: "Social Dashboard",
-    desc: "A dashboard showing social media stats and analytics in real-time with clean data visualizations.",
-    tags: ["React", "Analytics"],
-    image: socialPreview,
-  },
-  {
-    title: "Task Manager",
-    desc: "Manage daily tasks, deadlines, and priorities with a clean, focused interface.",
-    tags: ["TypeScript", "UI"],
-    image: tasksPreview,
-  },
-  {
-    title: "Weather App",
-    desc: "Check real-time weather conditions with animated icons and multi-day forecasts.",
-    tags: ["API", "Animation"],
-    image: weatherPreview,
-  },
-  {
-    title: "Portfolio",
-    desc: "A personal portfolio website to showcase projects and skills elegantly.",
-    tags: ["Design", "Motion"],
-    image: portfolioPreview,
-  },
-  {
-    title: "Game Website",
-    desc: "Interactive web-based games with fun animations and score tracking.",
-    tags: ["JavaScript", "Canvas"],
-    image: gamePreview,
-  },
 ];
 
 function Reveal({
@@ -301,6 +258,144 @@ function ContactForm() {
         <p className="text-center text-sm text-destructive">{error}</p>
       )}
     </form>
+  );
+}
+
+function ProjectCard({ project, index }: { project: Project; index: number }) {
+  const img = resolveImage(project.image_url);
+  return (
+    <Reveal delay={(index % 3) * 120}>
+      <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/70 transition-all duration-500 hover:-translate-y-2 hover:border-accent/60 hover:shadow-[0_24px_60px_-16px] hover:shadow-accent/20">
+        <div className="project-preview relative aspect-[3/2] overflow-hidden border-b border-border bg-secondary">
+          {img && (
+            <img
+              src={img}
+              alt={`${project.title} preview`}
+              loading="lazy"
+              width={1200}
+              height={800}
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-card/70 via-transparent to-transparent" />
+        </div>
+        <div className="flex flex-1 flex-col p-6">
+          <div className="mb-5 flex items-center justify-between">
+            <div className="flex size-12 items-center justify-center rounded-xl bg-secondary transition-colors duration-300 group-hover:bg-accent group-hover:text-accent-foreground">
+              <Code2 className="size-6" />
+            </div>
+            <ArrowUpRight className="size-5 text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-accent" />
+          </div>
+          <h3 className="text-xl font-bold transition-colors duration-300 group-hover:text-accent">
+            {project.title}
+          </h3>
+          <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+            {project.description}
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {project.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition-colors duration-300 group-hover:border-accent/40"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+          {project.link ? (
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 flex items-center justify-center gap-2 rounded-lg border border-border py-2.5 text-sm font-semibold transition-all duration-300 hover:border-accent hover:bg-accent hover:text-accent-foreground"
+            >
+              Project Link
+              <ArrowUpRight className="size-4" />
+            </a>
+          ) : (
+            <span className="mt-6 flex items-center justify-center rounded-lg border border-dashed border-border py-2.5 text-sm text-muted-foreground">
+              Link coming soon
+            </span>
+          )}
+        </div>
+      </article>
+    </Reveal>
+  );
+}
+
+function ProjectGroups() {
+  const { data, isLoading } = useQuery(portfolioQuery);
+  if (isLoading || !data)
+    return <p className="mt-16 text-center text-muted-foreground">Loading projects...</p>;
+  const { projects, categories } = data;
+  const groups = [
+    ...categories.map((c) => ({
+      key: c.id,
+      name: c.name as string | null,
+      items: projects.filter((p) => p.category_id === c.id),
+    })),
+    {
+      key: "none",
+      name: categories.length ? "Other Projects" : null,
+      items: projects.filter(
+        (p) => !p.category_id || !categories.some((c) => c.id === p.category_id),
+      ),
+    },
+  ].filter((g) => g.items.length);
+  return (
+    <div className="mt-16 space-y-16">
+      {groups.map((g) => (
+        <div key={g.key}>
+          {g.name && (
+            <h3 className="mb-8 text-2xl font-bold">
+              {g.name}
+              <span className="text-accent">.</span>
+            </h3>
+          )}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {g.items.map((p, i) => (
+              <ProjectCard key={p.id} project={p} index={i} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CustomSections() {
+  const { data } = useQuery(portfolioQuery);
+  if (!data?.sections.length) return null;
+  return (
+    <>
+      {data.sections.map((sec) => {
+        const img = resolveImage(sec.image_url);
+        return (
+          <section key={sec.id} className="px-6 py-28">
+            <div className="mx-auto max-w-6xl">
+              <Reveal>
+                <h2 className="text-center text-4xl font-bold md:text-5xl">{sec.title}</h2>
+              </Reveal>
+              <Reveal delay={150}>
+                <div className={`mt-12 grid items-center gap-10 ${img ? "md:grid-cols-2" : ""}`}>
+                  {img && (
+                    <img
+                      src={img}
+                      alt={sec.title}
+                      loading="lazy"
+                      className="w-full rounded-2xl border border-border object-cover"
+                    />
+                  )}
+                  <p className="mx-auto max-w-3xl whitespace-pre-line leading-relaxed text-muted-foreground">
+                    {sec.body}
+                  </p>
+                </div>
+              </Reveal>
+            </div>
+          </section>
+        );
+      })}
+    </>
   );
 }
 
@@ -535,59 +630,11 @@ function Index() {
               My <span className="text-accent">Projects</span>
             </h2>
           </Reveal>
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {PROJECTS.map((project, i) => (
-              <Reveal key={project.title} delay={(i % 3) * 120}>
-                 <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/70 transition-all duration-500 hover:-translate-y-2 hover:border-accent/60 hover:shadow-[0_24px_60px_-16px] hover:shadow-accent/20">
-                   <div className="project-preview relative aspect-[3/2] overflow-hidden border-b border-border bg-secondary">
-                     <img
-                       src={project.image}
-                       alt={`${project.title} interface preview`}
-                       loading="lazy"
-                       width={1200}
-                       height={800}
-                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                     />
-                     <div className="absolute inset-0 bg-gradient-to-t from-card/70 via-transparent to-transparent" />
-                   </div>
-                   <div className="flex flex-1 flex-col p-6">
-                   <div className="mb-5 flex items-center justify-between">
-                    <div className="flex size-12 items-center justify-center rounded-xl bg-secondary transition-colors duration-300 group-hover:bg-accent group-hover:text-accent-foreground">
-                      <Code2 className="size-6" />
-                    </div>
-                    <ArrowUpRight className="size-5 text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-accent" />
-                  </div>
-                  <h3 className="text-xl font-bold transition-colors duration-300 group-hover:text-accent">
-                    {project.title}
-                  </h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    {project.desc}
-                  </p>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition-colors duration-300 group-hover:border-accent/40"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="mt-6 flex gap-3">
-                    <button className="flex-1 rounded-lg border border-border py-2 text-sm font-semibold transition-all duration-300 hover:border-foreground hover:bg-foreground hover:text-background">
-                      Github
-                    </button>
-                    <button className="flex-1 rounded-lg border border-border py-2 text-sm font-semibold transition-all duration-300 hover:border-accent hover:bg-accent hover:text-accent-foreground">
-                      Demo
-                    </button>
-                  </div>
-                   </div>
-                </article>
-              </Reveal>
-            ))}
-          </div>
+          <ProjectGroups />
         </div>
       </section>
+
+      <CustomSections />
 
       {/* Contact */}
       <section id="contact" className="px-6 py-28">
