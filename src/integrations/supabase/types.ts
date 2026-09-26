@@ -106,6 +106,45 @@ export type Database = {
           },
         ]
       }
+      section_order: {
+        Row: {
+          key: string
+          sort_order: number
+        }
+        Insert: {
+          key: string
+          sort_order?: number
+        }
+        Update: {
+          key?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      skills: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          label: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          label: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          label?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
