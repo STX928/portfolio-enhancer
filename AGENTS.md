@@ -8,3 +8,4 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+- Portfolio content (projects, categories, sections) lives in the database and is edited at /admin; only the owner's confirmed email gets the admin role — keeps the site editable without code changes.
