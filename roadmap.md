@@ -9,3 +9,5 @@
 - [x] Verify the updated portfolio on desktop and phone views
 - [x] Sequence the hero so SAJAD finishes before the remaining content appears
 - [x] Enlarge the SAJAD title and correct the highlighted phrase on phone screens
+- [x] Admin page to add/edit/delete projects, categories and custom sections (with images and links)
+- [x] Replace Github/Demo buttons with a single Project Link button
