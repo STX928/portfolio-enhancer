@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Session } from "@supabase/supabase-js";
-import { ArrowLeft, LogOut, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, LogOut, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
+import { SKILL_ICONS, skillIcon } from "@/lib/skill-icons";
 import { supabase } from "@/integrations/supabase/client";
 import {
   portfolioQuery,
@@ -11,6 +12,8 @@ import {
   type Category,
   type CustomSection,
   type Project,
+  type Skill,
+  orderedSections,
 } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/admin")({
@@ -138,12 +141,14 @@ function LoginForm() {
 }
 
 function Dashboard() {
-  const [tab, setTab] = useState<"projects" | "categories" | "sections">("projects");
+  const [tab, setTab] = useState<"projects" | "categories" | "sections" | "skills" | "order">("projects");
   const { data, isLoading } = useQuery(portfolioQuery);
   const tabs = [
     ["projects", "Projects"],
     ["categories", "Categories"],
     ["sections", "Sections"],
+    ["skills", "Skills"],
+    ["order", "Section order"],
   ] as const;
   return (
     <div className="mt-8">
@@ -161,6 +166,10 @@ function Dashboard() {
           <ProjectsAdmin projects={data.projects} categories={data.categories} />
         ) : tab === "categories" ? (
           <CategoriesAdmin categories={data.categories} />
+        ) : tab === "skills" ? (
+          <SkillsAdmin skills={data.skills} />
+        ) : tab === "order" ? (
+          <OrderAdmin data={data} />
         ) : (
           <SectionsAdmin sections={data.sections} />
         )}
@@ -387,7 +396,7 @@ function SectionsAdmin({ sections }: { sections: CustomSection[] }) {
   const open = (s?: CustomSection) => {
     setErr("");
     setEditing(s ? s.id : "new");
-    setDraft({ title: s?.title ?? "", body: s?.body ?? "", image_url: s?.image_url ?? "", sort_order: s?.sort_order ?? sections.length + 1 });
+    setDraft({ title: s?.title ?? "", body: s?.body ?? "", image_url: s?.image_url ?? "", sort_order: s?.sort_order ?? 900 + sections.length });
   };
 
   const save = async () => {
@@ -409,14 +418,13 @@ function SectionsAdmin({ sections }: { sections: CustomSection[] }) {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">Sections appear on the site after your projects (e.g. Certificates, Experience).</p>
+      <p className="text-sm text-muted-foreground">Add extra sections (e.g. Certificates, Experience). Change where they appear in the "Section order" tab.</p>
       <button className={btnPrimary} onClick={() => open()}><Plus className="size-4" /> Add section</button>
       {editing && draft && (
         <Card>
           <div className="grid gap-3">
             <input className={input} placeholder="Section title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
             <textarea className={input} rows={5} placeholder="Section text" value={draft.body} onChange={(e) => setDraft({ ...draft, body: e.target.value })} />
-            <input className={input} type="number" placeholder="Order" value={draft.sort_order} onChange={(e) => setDraft({ ...draft, sort_order: Number(e.target.value) })} />
             <ImageField value={draft.image_url} onChange={(v) => setDraft({ ...draft, image_url: v })} />
             {err && <p className="text-sm text-destructive">{err}</p>}
             <div className="flex gap-2">
@@ -448,6 +456,101 @@ function SectionsAdmin({ sections }: { sections: CustomSection[] }) {
                 <Trash2 className="size-4" />
               </button>
             </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+
+function SkillsAdmin({ skills }: { skills: Skill[] }) {
+  const refresh = useRefresh();
+  const [label, setLabel] = useState("");
+  const [icon, setIcon] = useState("code");
+  const Preview = skillIcon(icon);
+  const add = async () => {
+    if (!label.trim()) return;
+    const max = Math.max(0, ...skills.map((s) => s.sort_order));
+    const { error } = await supabase.from("skills").insert({ label: label.trim().slice(0, 60), icon, sort_order: max + 1 });
+    if (error) return alert(error.message);
+    setLabel("");
+    refresh();
+  };
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <input className={input} placeholder="New skill (e.g. OSPF)" value={label} onChange={(e) => setLabel(e.target.value)} />
+        <div className="flex gap-2">
+          <span className="flex items-center rounded-lg border border-border px-3"><Preview className="size-5 text-accent" /></span>
+          <select className={`${input} bg-background sm:w-40`} value={icon} onChange={(e) => setIcon(e.target.value)}>
+            {Object.keys(SKILL_ICONS).map((k) => <option key={k} value={k}>{k}</option>)}
+          </select>
+          <button className={btnPrimary} onClick={add}><Plus className="size-4" /> Add</button>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+        {skills.map((s) => {
+          const Icon = skillIcon(s.icon);
+          return (
+            <Card key={s.id}>
+              <div className="flex items-center gap-3">
+                <Icon className="size-5 shrink-0 text-accent" />
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">{s.label}</span>
+                <button
+                  aria-label={`Delete ${s.label}`}
+                  className="text-muted-foreground hover:text-destructive"
+                  onClick={async () => {
+                    if (!confirm(`Delete skill "${s.label}"?`)) return;
+                    const { error } = await supabase.from("skills").delete().eq("id", s.id);
+                    if (error) alert(error.message);
+                    refresh();
+                  }}
+                >
+                  <Trash2 className="size-4" />
+                </button>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function OrderAdmin({ data }: { data: { order: { key: string; sort_order: number }[]; sections: CustomSection[] } }) {
+  const refresh = useRefresh();
+  const [busy, setBusy] = useState(false);
+  const items = orderedSections(data.order, data.sections);
+  const move = async (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
+    [next[i], next[j]] = [next[j], next[i]];
+    setBusy(true);
+    const ops = next.map((it, idx) => {
+      const sort_order = (idx + 1) * 10;
+      return it.kind === "builtin"
+        ? supabase.from("section_order").upsert({ key: it.key, sort_order })
+        : supabase.from("custom_sections").update({ sort_order }).eq("id", it.key);
+    });
+    const res = await Promise.all(ops);
+    const e = res.find((r) => r.error);
+    if (e?.error) alert(e.error.message);
+    setBusy(false);
+    refresh();
+  };
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">Use the arrows to choose the order sections appear on your site. The opening "SAJAD" screen always stays first.</p>
+      {items.map((it, i) => (
+        <Card key={it.key}>
+          <div className="flex items-center gap-3">
+            <span className="w-6 text-sm text-muted-foreground">{i + 1}</span>
+            <span className="min-w-0 flex-1 truncate font-medium">{it.title}</span>
+            <span className="hidden text-xs text-muted-foreground sm:inline">{it.kind === "builtin" ? "Main" : "Your section"}</span>
+            <button className={btnGhost} disabled={busy || i === 0} onClick={() => move(i, -1)} aria-label="Move up"><ArrowUp className="size-4" /></button>
+            <button className={btnGhost} disabled={busy || i === items.length - 1} onClick={() => move(i, 1)} aria-label="Move down"><ArrowDown className="size-4" /></button>
           </div>
         </Card>
       ))}
