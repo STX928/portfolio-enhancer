@@ -526,7 +526,7 @@ function OrderAdmin({ data }: { data: { order: { key: string; sort_order: number
     const j = i + dir;
     if (j < 0 || j >= items.length) return;
     const next = [...items];
-    [next[i], next[j]] = [next[j], next[i]];
+    const tmp = next[i]!; next[i] = next[j]!; next[j] = tmp;
     setBusy(true);
     const ops = next.map((it, idx) => {
       const sort_order = (idx + 1) * 10;
