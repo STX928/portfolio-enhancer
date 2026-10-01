@@ -56,7 +56,7 @@ export function orderedSections(order: OrderItem[], sections: CustomSection[]) {
     ...Object.keys(BUILTIN_SECTIONS).map((k) => ({
       kind: "builtin" as const,
       key: k,
-      title: BUILTIN_SECTIONS[k],
+      title: BUILTIN_SECTIONS[k] ?? k,
       sort_order: order.find((o) => o.key === k)?.sort_order ?? 0,
     })),
     ...sections.map((s) => ({ kind: "custom" as const, key: s.id, title: s.title, sort_order: s.sort_order })),

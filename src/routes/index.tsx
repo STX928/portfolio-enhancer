@@ -29,6 +29,7 @@ import { useServerFn } from "@tanstack/react-start";
 import profileAsset from "../assets/sajad-nazar-profile.jpg.asset.json";
 import { useQuery } from "@tanstack/react-query";
 import { portfolioQuery, resolveImage, type Project } from "@/lib/portfolio";
+import { skillIcon } from "@/lib/skill-icons";
 import { sendContactMessage } from "@/lib/contact.functions";
 
 export const Route = createFileRoute("/")({
@@ -72,20 +73,6 @@ const SPARKS = [
   { left: 36, top: 88, delay: 1.1 },
 ];
 
-const SKILLS = [
-  { icon: Code2, label: "HTML5" },
-  { icon: Palette, label: "CSS3" },
-  { icon: Braces, label: "JavaScript" },
-  { icon: FileCode2, label: "TypeScript" },
-  { icon: Atom, label: "React" },
-  { icon: Router, label: "Routing" },
-  { icon: Network, label: "VLANs" },
-  { icon: Cable, label: "TCP/IP" },
-  { icon: Database, label: "MySQL" },
-  { icon: Wifi, label: "Cisco IOS" },
-  { icon: ShieldCheck, label: "Network Security" },
-  { icon: GitBranch, label: "GitHub" },
-];
 
 function Reveal({
   children,
@@ -371,7 +358,7 @@ function CustomSections() {
       {data.sections.map((sec) => {
         const img = resolveImage(sec.image_url);
         return (
-          <section key={sec.id} className="px-6 py-28">
+          <section key={sec.id} className="px-6 py-28" style={{ order: sec.sort_order }}>
             <div className="mx-auto max-w-6xl">
               <Reveal>
                 <h2 className="text-center text-4xl font-bold md:text-5xl">{sec.title}</h2>
@@ -401,6 +388,10 @@ function CustomSections() {
 
 function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: site } = useQuery(portfolioQuery);
+  const DEFAULT_ORDER: Record<string, number> = { about: 10, skill: 20, project: 30, contact: 1000 };
+  const ord = (k: string) => site?.order.find((o) => o.key === k)?.sort_order ?? DEFAULT_ORDER[k];
+  const skills = site?.skills ?? [];
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -513,9 +504,9 @@ function Index() {
         ))}
       </div>
 
-      <main className="relative z-10">
+      <main className="relative z-10 flex flex-col">
       {/* Hero */}
-      <section id="home" className="flex min-h-screen items-center justify-center px-6">
+      <section id="home" style={{ order: -1000 }} className="flex min-h-screen items-center justify-center px-6">
         <div className="flex flex-col items-center text-center">
           <svg
             viewBox="0 0 1500 320"
@@ -557,7 +548,7 @@ function Index() {
       </section>
 
       {/* About */}
-      <section id="about" className="px-6 py-28">
+      <section id="about" className="px-6 py-28" style={{ order: ord("about") }}>
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <h2 className="text-center text-4xl font-bold md:text-5xl">
@@ -600,7 +591,7 @@ function Index() {
       </section>
 
       {/* Skills */}
-      <section id="skill" className="px-6 py-28">
+      <section id="skill" className="px-6 py-28" style={{ order: ord("skill") }}>
         <div className="mx-auto max-w-4xl">
           <Reveal>
             <h2 className="text-center text-4xl font-bold md:text-5xl">
@@ -608,22 +599,25 @@ function Index() {
             </h2>
           </Reveal>
           <div className="mt-16 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
-            {SKILLS.map((skill, i) => (
-              <Reveal key={skill.label} delay={i * 60}>
+            {skills.map((skill, i) => {
+              const Icon = skillIcon(skill.icon);
+              return (
+              <Reveal key={skill.id} delay={i * 60}>
                 <div className="group flex h-24 flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card/50 transition-all duration-300 hover:-translate-y-1.5 hover:border-accent hover:shadow-[0_16px_40px_-12px] hover:shadow-accent/25">
-                  <skill.icon className="size-7 text-muted-foreground transition-colors duration-300 group-hover:text-accent" />
+                  <Icon className="size-7 text-muted-foreground transition-colors duration-300 group-hover:text-accent" />
                   <span className="text-xs font-medium text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
                     {skill.label}
                   </span>
                 </div>
               </Reveal>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* Projects */}
-      <section id="project" className="px-6 py-28">
+      <section id="project" className="px-6 py-28" style={{ order: ord("project") }}>
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <h2 className="text-center text-4xl font-bold md:text-5xl">
@@ -637,7 +631,7 @@ function Index() {
       <CustomSections />
 
       {/* Contact */}
-      <section id="contact" className="px-6 py-28">
+      <section id="contact" className="px-6 py-28" style={{ order: ord("contact") }}>
         <div className="mx-auto max-w-3xl">
           <Reveal>
             <h2 className="text-center text-4xl font-bold md:text-5xl">
